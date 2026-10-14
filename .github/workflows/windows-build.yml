@@ -1,0 +1,34 @@
+name: Build ELITE Browser for Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Install .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore ELITE.Browser.csproj
+      - name: Publish self-contained Windows x64 app
+        run: dotnet publish ELITE.Browser.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o publish
+      - name: Package app
+        shell: pwsh
+        run: Compress-Archive -Path publish\* -DestinationPath ELITE-Browser-Windows-x64.zip -Force
+      - name: Upload EXE and runtime files
+        uses: actions/upload-artifact@v4
+        with:
+          name: ELITE-Browser-Windows-x64
+          path: ELITE-Browser-Windows-x64.zip
+          if-no-files-found: error
+          retention-days: 14
