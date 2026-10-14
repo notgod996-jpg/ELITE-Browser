@@ -1,0 +1,1 @@
+This repository uses GitHub Actions to publish a Windows x64 ZIP containing ELITE.Browser.exe and required runtime files. Check the Actions tab for build status and download the artifact from a successful run.
